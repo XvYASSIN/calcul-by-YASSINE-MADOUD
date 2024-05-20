@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculatrice avec Historique</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+    .calculator {
+            width: 100%;
+            max-width: 350px;
+            background-color: #000;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px #000;
+            position: relative;
+        }
+    .display {
+            width: 100%;
+            height: 40px;
+            background-color: #333;
+            color: #00f;
+            text-align: right;
+            padding: 10px;
+            font-size: 24px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    .button-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+    .button {
+            width: 50px;
+            height: 50px;
+            background-color: #00f;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+    .button.operator,.button.accent {
+            background-color: #444;
+        }
+    .history {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 3px 8px;
+            cursor: pointer;
+        }
+    .history-menu {
+            display: none;
+            background-color: #666;
+            color: #fff;
+            position: absolute;
+            right: 5px;
+            top: 40px;
+            border-radius: 5px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            width: 250px;
+            box-shadow: 0px 0px 10px 0px #000;
+        }
+
+        
+       .title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        
+       .history-menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+       .history-menu li {
+            padding: 5px 10px;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+        }
+
+       .history-menu li:last-child {
+            border-bottom: none;
+        }
+
+       .history-menu li:hover {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">
+        <h1>SIMPLE CALCULATOR MADE BY YASSINE MADOUD</h1>
+    </div>
+    <div class="calculator">
+        <button class="history" onclick="toggleHistoryMenu()"><i class="bi bi-clock-history"></i></button>
+        <div class="display" id="display">0</div>
+        <div class="button-row" style="margin-bottom: 10px;">
+            <button class="button" style="width: 60px; height: 60px;" onclick="clearDisplay()">AC</button>
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('(')">(</button>
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue(')')">)</button>
+            <button class="button operator" style="width: 60px; height: 60px;" onclick="inputValue('/')">/</button>
+        </div>
+        <div class="button-row" style="margin-bottom: 10px;">
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('7')">7</button>
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('8')">8</button>
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('9')">9</button>
+            <button class="button operator" style="width: 60px; height:60px;" onclick="inputValue('*')">*</button>
+        </div>
+        <div class="button-row" style="margin-bottom: 10px;">
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('4')">4</button>
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('5')">5</button>
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('6')">6</button>
+            <button class="button operator" style="width: 60px; height: 60px;" onclick="inputValue('-')">-</button>
+        </div>
+        <div class="button-row" style="margin-bottom: 10px;">
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('1')">1</button>
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('2')">2</button>
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('3')">3</button>
+            <button class="button operator" style="width: 60px; height: 60px;" onclick="inputValue('+')">+</button>
+        </div>
+        <div class="button-row" style="margin-bottom: 10px; margin-top: 25px;">
+            <button class="button double" style="width: 130px; height: 60px;" onclick="inputValue('0')">0</button>
+            <button class="button" style="width: 60px; height: 60px;" onclick="inputValue('.')">.</button>
+            <button class="button accent" style="width: 60px; height: 60px;" onclick="calculate()">=</button>
+        </div>
+    </div>
+    <div class="history-menu" id="history-menu">
+        <button class="button" onclick="toggleHistoryMenu()"><i class="bi bi-x"></i></button>
+        <h3>Historique</h3>
+        <ul id="history-list"></ul>
+    </div>
+    <script>
+        let display = document.getElementById("display");
+        let historyMenu = document.getElementById("history-menu");
+        let historyList = document.getElementById("history-list");
+        let history = [];
+
+        function clearDisplay() {
+            display.innerText = "0";
+        }
+
+        function inputValue(value) {
+            if (display.innerText === "0" || display.innerText === "Error") {
+                display.innerText = value;
+            } else {
+                display.innerText += value;
+            }
+        }
+
+        function calculate() {
+            let expression = display.innerText;
+            let result;
+
+            try {
+                result = eval(expression);
+                display.innerText = result;
+                history.push({expression, result});
+                updateHistoryList();
+            } catch (error) {
+                display.innerText = "Error";
+            }
+        }
+
+        function toggleHistoryMenu() {
+            historyMenu.style.display = historyMenu.style.display === "none" ? "block" : "none";
+        }
+
+        function updateHistoryList() {
+            historyList.innerHTML = "";
+            history.forEach((entry, index) => {
+                let li = document.createElement("li");
+                li.innerText = `${entry.expression} = ${entry.result}`;
+                historyList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
